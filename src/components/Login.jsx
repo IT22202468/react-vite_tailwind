@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { loginUser } from '../services/auth-api'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
     const [form, setForm] = useState({ username: '', password: '' });
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,6 +17,11 @@ const Login = () => {
         if (result.ok) {
             localStorage.setItem('token', result.data.token);
             setMessage(`Login successful. Role: ${result.data.role}`);
+            if (result.data.role === 'admin') {
+                navigate('/admin');
+            } else if (result.data.role === 'user') {
+                navigate('/dashboard');
+            }
         } else {
             setMessage(result.data.message);
         }
