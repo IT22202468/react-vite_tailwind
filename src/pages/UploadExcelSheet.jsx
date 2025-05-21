@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Navbar from "../components/Navbar";
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { Button, Select, MenuItem, FormControl, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,20 +24,39 @@ const UploadExcelSheet = () => {
     "Partial Granting"
   ];
 
-  // Define columns for the DataGrid
+  // Define columns for the DataGrid with adjusted widths
   const columns = [
-    { field: 'grantedDate', headerName: 'Granted Date', editable: true, width: 150 },
-    { field: 'buyerName', headerName: 'Buyer name', editable: true, width: 150 },
-    { field: 'invoiceNumber', headerName: 'Invoice Number', editable: true, width: 150 },
-    { field: 'grantedValue', headerName: 'Granted Value', editable: true, width: 150 },
-    { field: 'lrAmount', headerName: 'LR Amount', editable: true, width: 150 },
-    { field: 'difference', headerName: 'Difference', editable: true, width: 150 },
-    { field: 'aging', headerName: 'Aging', editable: true, width: 120 },
-    { field: 'reasonCategory', headerName: 'Reason Category', editable: true, width: 180 },
+    { 
+      field: 'grantedDate', 
+      headerName: 'Granted Date', 
+      editable: true, 
+      width: 130, 
+      flex: 0.8,
+    },
+    { 
+      field: 'buyerName', 
+      headerName: 'Buyer name', 
+      editable: true, 
+      width: 180, 
+      flex: 1.2,
+    },
+    { 
+      field: 'invoiceNumber', 
+      headerName: 'Invoice Number', 
+      editable: true, 
+      width: 170, 
+      flex: 1,
+    },
+    { field: 'grantedValue', headerName: 'Granted Value', editable: true, width: 130, flex: 1 },
+    { field: 'lrAmount', headerName: 'LR Amount', editable: true, width: 130, flex: 1 },
+    { field: 'difference', headerName: 'Difference', editable: true, width: 130, flex: 1 },
+    { field: 'aging', headerName: 'Aging', editable: true, width: 100, flex: 0.7 },
+    { field: 'reasonCategory', headerName: 'Reason Category', editable: true, width: 150, flex: 1 },
     { 
       field: 'reasons', 
       headerName: 'Reasons', 
-      width: 180,
+      width: 200, 
+      flex: 1.2,
       editable: false, // We'll handle custom editing with the dropdown
       renderCell: (params) => {
         return (
@@ -57,12 +76,13 @@ const UploadExcelSheet = () => {
         );
       }
     },
-    { field: 'comments', headerName: 'Comments', editable: true, width: 180 },
-    { field: 'value', headerName: 'Value', editable: true, width: 120 },
+    { field: 'comments', headerName: 'Comments', editable: true, width: 200, flex: 1 },
+    { field: 'value', headerName: 'Value', editable: true, width: 120, flex: 0.8 },
     { 
       field: 'attachments', 
       headerName: 'Attachments', 
       width: 150,
+      flex: 1,
       editable: false,
       renderCell: (params) => {
         const rowId = params.row.id;
@@ -109,14 +129,15 @@ const UploadExcelSheet = () => {
         );
       }
     },
-    { field: 'updatedBy', headerName: 'Updated by', editable: true, width: 150 },
-    { field: 'updatedOn', headerName: 'Updated on', editable: true, width: 150 },
-    { field: 'updatedTime', headerName: 'Updated time', editable: true, width: 150 },
+    { field: 'updatedBy', headerName: 'Updated by', editable: true, width: 150, flex: 1 },
+    { field: 'updatedOn', headerName: 'Updated on', editable: true, width: 150, flex: 1 },
+    { field: 'updatedTime', headerName: 'Updated time', editable: true, width: 150, flex: 1 },
     { 
       field: 'actions', 
       headerName: 'Actions', 
-      width: 100,
-      sortable: false,
+      width: 110,
+      flex: 0.7,
+      editable: false,
       renderCell: (params) => (
         <Button
           variant="contained"
@@ -495,6 +516,29 @@ const UploadExcelSheet = () => {
               checkboxSelection={false}
               disableRowSelectionOnClick
               onCellEditStop={handleCellEdit}
+              slots={{
+                toolbar: GridToolbar,
+              }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true,
+                },
+              }}
+              sx={{
+                '& .MuiDataGrid-columnHeader': {
+                  backgroundColor: '#f5f5f5',
+                },
+                '& .MuiDataGrid-cell': {
+                  padding: '8px',
+                },
+                // This enables column resizing
+                '& .MuiDataGrid-columnSeparator': {
+                  visibility: 'visible',
+                  '&:hover': {
+                    backgroundColor: '#1976d2',
+                  },
+                },
+              }}
             />
             <Button
               variant="contained"
