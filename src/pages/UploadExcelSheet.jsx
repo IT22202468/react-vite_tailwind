@@ -48,16 +48,124 @@ const UploadExcelSheet = () => {
     }
   ];
 
+  // Column mapping from Excel to our table
+  const columnMapping = {
+    "Granted Date": "grantedDate",
+    "Customer": "buyerName",
+    "CI/ BAH Number": "invoiceNumber",
+    "Granted Amount": "grantedValue",
+    "LR Amount": "lrAmount",
+    "Difference": "difference",
+    // Other fields will be calculated or left blank
+  };
+
+  // Calculate age in days from granted date
+  const calculateAging = (grantedDate) => {
+    if (!grantedDate) return '';
+    
+    let date;
+    // Check if the date is already a Date object or needs conversion
+    if (grantedDate instanceof Date) {
+      date = grantedDate;
+    } else {
+      // Try to convert from Excel date or string format
+      date = new Date(grantedDate);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+    }
+    
+    const today = new Date();
+    const diffTime = Math.abs(today - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays.toString();
+  };
+
   // Handle file upload
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
     setFile(file);
-    // For immediate feedback
-    setTimeout(() => {
-      createBlankTable();
-    }, 100);
+    
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      
+      // Get the range of the sheet
+      const range = XLSX.utils.decode_range(worksheet['!ref']);
+      
+      // Find header row (row 4, which is index 3 in 0-based indexing)
+      const headerRowIndex = 3; 
+      const headers = [];
+      
+      // Extract headers from row 4
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: headerRowIndex, c: C });
+        const cell = worksheet[cellAddress];
+        headers[C] = cell?.v || '';
+      }
+
+      // Process data rows (starting from row 5)
+      const jsonData = [];
+      for (let R = headerRowIndex + 1; R <= range.e.r; R++) {
+        const row = {};
+        let hasData = false;
+        
+        for (let C = range.s.c; C <= range.e.c; C++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          const cell = worksheet[cellAddress];
+          const headerText = headers[C];
+          
+          // Skip if no header or not in our mapping
+          if (!headerText || !columnMapping[headerText]) continue;
+          
+          const fieldName = columnMapping[headerText];
+          if (cell) {
+            row[fieldName] = cell.v;
+            hasData = true;
+          } else {
+            row[fieldName] = '';
+          }
+        }
+        
+        // Only add rows that have data
+        if (hasData) {
+          // Set ID for DataGrid
+          row.id = nextId + jsonData.length;
+          
+          // Calculate aging based on granted date
+          if (row.grantedDate) {
+            row.aging = calculateAging(row.grantedDate);
+          }
+          
+          // Set empty values for fields not present in Excel
+          row.reasonCategory = row.reasonCategory || '';
+          row.reasons = row.reasons || '';
+          row.comments = row.comments || '';
+          row.grantedValue2 = row.grantedValue2 || '';
+          row.value = row.value || '';
+          row.attachments = row.attachments || '';
+          row.updatedBy = row.updatedBy || '';
+          row.updatedOn = row.updatedOn || '';
+          row.updatedTime = row.updatedTime || '';
+          
+          jsonData.push(row);
+        }
+      }
+      
+      setRows(jsonData);
+      setNextId(nextId + jsonData.length);
+      
+      console.log("Excel data loaded into DataGrid", jsonData);
+    } catch (error) {
+      console.error("Error processing Excel file:", error);
+      alert("Error processing the Excel file. Please check the format.");
+    }
   };
 
   // Create a blank table with predefined columns
@@ -122,9 +230,17 @@ const UploadExcelSheet = () => {
 
   // Handle cell edit
   const handleCellEdit = (params) => {
-    const updatedRows = rows.map(row => 
-      row.id === params.id ? { ...row, [params.field]: params.value } : row
-    );
+    const updatedRows = rows.map(row => {
+      if (row.id === params.id) {
+        // If granted date is updated, recalculate aging
+        const updatedRow = { ...row, [params.field]: params.value };
+        if (params.field === 'grantedDate') {
+          updatedRow.aging = calculateAging(params.value);
+        }
+        return updatedRow;
+      }
+      return row;
+    });
     setRows(updatedRows);
   };
 
