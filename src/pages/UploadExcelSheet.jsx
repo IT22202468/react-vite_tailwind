@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Navbar from "../components/Navbar";
-import { DataGrid } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Button, Select, MenuItem, FormControl } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -10,6 +10,16 @@ const UploadExcelSheet = () => {
   const [rows, setRows] = useState([]);
   const [nextId, setNextId] = useState(1);
   const [file, setFile] = useState(null);
+
+  // Define reason options for dropdown
+  const reasonOptions = [
+    "R&Q", 
+    "ARU", 
+    "ARU & R&Q", 
+    "Rounding off", 
+    "Changes in Invoice reference", 
+    "Partial Granting"
+  ];
 
   // Define columns for the DataGrid
   const columns = [
@@ -21,7 +31,29 @@ const UploadExcelSheet = () => {
     { field: 'difference', headerName: 'Difference', editable: true, width: 150 },
     { field: 'aging', headerName: 'Aging', editable: true, width: 120 },
     { field: 'reasonCategory', headerName: 'Reason Category', editable: true, width: 180 },
-    { field: 'reasons', headerName: 'Reasons', editable: true, width: 180 },
+    { 
+      field: 'reasons', 
+      headerName: 'Reasons', 
+      width: 180,
+      editable: false, // We'll handle custom editing with the dropdown
+      renderCell: (params) => {
+        return (
+          <FormControl fullWidth size="small">
+            <Select
+              value={params.value || ''}
+              onChange={(e) => handleReasonChange(params.row.id, e.target.value)}
+              displayEmpty
+              sx={{ height: 35, fontSize: '0.875rem' }}
+            >
+              <MenuItem value="" disabled><em>Select reason</em></MenuItem>
+              {reasonOptions.map((option) => (
+                <MenuItem key={option} value={option}>{option}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
+      }
+    },
     { field: 'comments', headerName: 'Comments', editable: true, width: 180 },
     { field: 'grantedValue2', headerName: 'Granted Value', editable: true, width: 150 },
     { field: 'value', headerName: 'Value', editable: true, width: 120 },
@@ -130,6 +162,16 @@ const UploadExcelSheet = () => {
     
     // Calculate difference
     return (grantedNum - lrNum).toFixed(2);
+  };
+
+  // Handle change for reason dropdown
+  const handleReasonChange = (id, value) => {
+    setRows(rows.map(row => {
+      if (row.id === id) {
+        return { ...row, reasons: value };
+      }
+      return row;
+    }));
   };
 
   // Handle file upload
