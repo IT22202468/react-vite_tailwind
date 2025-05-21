@@ -59,22 +59,60 @@ const UploadExcelSheet = () => {
     // Other fields will be calculated or left blank
   };
 
+  // Helper function to convert Excel serial date to JavaScript Date
+  const excelDateToJSDate = (excelDate) => {
+    // Excel dates are number of days since 1/1/1900
+    if (typeof excelDate === 'number') {
+      // Use a more direct approach to handle Excel dates
+      // The extra +1 accounts for the timezone difference when constructing date objects
+      const year = Math.floor((excelDate - 1) / 365.25) + 1900;
+      let remainingDays = Math.floor(excelDate - 1 - ((year - 1900) * 365.25));
+
+      // Account for Excel leap year bug
+      if (excelDate > 60) {
+        remainingDays += 1; // Add a day to offset the non-existent 2/29/1900 in Excel
+      }
+
+      // Use UTC methods to avoid timezone issues
+      const baseDate = new Date(Date.UTC(1900, 0, 0));
+      const resultDate = new Date(baseDate);
+      resultDate.setUTCDate(baseDate.getUTCDate() + excelDate);
+
+      // Format the date
+      const month = resultDate.getUTCMonth() + 1; // months are 0-based
+      const day = resultDate.getUTCDate();
+      const fullYear = resultDate.getUTCFullYear();
+      
+      return `${month}/${day}/${fullYear}`;
+    }
+    // If it's already a string or we couldn't convert, return as is
+    return excelDate;
+  };
+
   // Calculate age in days from granted date
   const calculateAging = (grantedDate) => {
     if (!grantedDate) return '';
     
-    let date;
-    // Check if the date is already a Date object or needs conversion
-    if (grantedDate instanceof Date) {
+    let dateStr, date;
+    
+    if (typeof grantedDate === 'number') {
+      // Convert Excel date to JS date string first
+      dateStr = excelDateToJSDate(grantedDate);
+      // Parse the resulting string
+      const [month, day, year] = dateStr.split('/').map(Number);
+      date = new Date(year, month - 1, day); // month is 0-indexed in JS Date
+    } else if (typeof grantedDate === 'string') {
+      // Try to parse the string date
+      date = new Date(grantedDate);
+    } else if (grantedDate instanceof Date) {
       date = grantedDate;
     } else {
-      // Try to convert from Excel date or string format
-      date = new Date(grantedDate);
-      
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return '';
-      }
+      return '';
+    }
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return '';
     }
     
     const today = new Date();
@@ -126,7 +164,17 @@ const UploadExcelSheet = () => {
           
           const fieldName = columnMapping[headerText];
           if (cell) {
-            row[fieldName] = cell.v;
+            // If it's a date cell specifically for grantedDate
+            if (fieldName === 'grantedDate') {
+              // Check if it's an Excel serial date number
+              if (cell.t === 'n') {
+                row[fieldName] = excelDateToJSDate(cell.v);
+              } else {
+                row[fieldName] = cell.v;
+              }
+            } else {
+              row[fieldName] = cell.v;
+            }
             hasData = true;
           } else {
             row[fieldName] = '';
