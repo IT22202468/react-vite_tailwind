@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Navbar from "../components/Navbar";
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Button, Select, MenuItem, FormControl } from '@mui/material';
+import { Button, Select, MenuItem, FormControl, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const UploadExcelSheet = () => {
   const [rows, setRows] = useState([]);
   const [nextId, setNextId] = useState(1);
   const [file, setFile] = useState(null);
+  const [attachments, setAttachments] = useState({});
 
   // Define reason options for dropdown
   const reasonOptions = [
@@ -57,7 +60,56 @@ const UploadExcelSheet = () => {
     { field: 'comments', headerName: 'Comments', editable: true, width: 180 },
     { field: 'grantedValue2', headerName: 'Granted Value', editable: true, width: 150 },
     { field: 'value', headerName: 'Value', editable: true, width: 120 },
-    { field: 'attachments', headerName: 'Attachments', editable: true, width: 150 },
+    { 
+      field: 'attachments', 
+      headerName: 'Attachments', 
+      width: 150,
+      editable: false,
+      renderCell: (params) => {
+        const rowId = params.row.id;
+        const hasAttachment = attachments[rowId] && attachments[rowId].length > 0;
+        
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {hasAttachment ? (
+              <Tooltip title={attachments[rowId].map(file => file.name).join(', ')}>
+                <IconButton 
+                  color="primary" 
+                  aria-label="view attachments"
+                  size="small"
+                  onClick={() => handleViewAttachment(rowId)}
+                >
+                  <DescriptionIcon />
+                  <span style={{ marginLeft: 5, fontSize: '0.75rem' }}>
+                    {attachments[rowId].length}
+                  </span>
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <div>
+                <input
+                  type="file"
+                  id={`attachment-upload-${rowId}`}
+                  multiple
+                  onChange={(e) => handleAttachmentUpload(e, rowId)}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor={`attachment-upload-${rowId}`}>
+                  <IconButton 
+                    component="span" 
+                    color="primary" 
+                    aria-label="upload attachment"
+                    size="small"
+                  >
+                    <AttachFileIcon />
+                  </IconButton>
+                </label>
+              </div>
+            )}
+          </div>
+        );
+      }
+    },
     { field: 'updatedBy', headerName: 'Updated by', editable: true, width: 150 },
     { field: 'updatedOn', headerName: 'Updated on', editable: true, width: 150 },
     { field: 'updatedTime', headerName: 'Updated time', editable: true, width: 150 },
@@ -273,6 +325,38 @@ const UploadExcelSheet = () => {
     }
   };
 
+  // Handle attachment upload
+  const handleAttachmentUpload = (event, rowId) => {
+    const files = Array.from(event.target.files);
+    if (files.length > 0) {
+      setAttachments(prev => ({
+        ...prev,
+        [rowId]: [...(prev[rowId] || []), ...files]
+      }));
+      
+      // Update the row to indicate there are attachments
+      setRows(rows.map(row => {
+        if (row.id === rowId) {
+          return { ...row, attachments: `${files.length} file(s)` };
+        }
+        return row;
+      }));
+    }
+  };
+
+  // Handle viewing of attachments
+  const handleViewAttachment = (rowId) => {
+    const files = attachments[rowId];
+    if (!files || files.length === 0) return;
+    
+    // For now, just display file names in an alert
+    // In a real app, you might open a modal or preview the files
+    alert(`Attached files:\n${files.map(file => `- ${file.name} (${(file.size/1024).toFixed(2)} KB)`).join('\n')}`);
+    
+    // Here you could implement file preview/download logic
+    // For example, creating object URLs or sending to a viewer component
+  };
+
   // Create a blank table with predefined columns
   const createBlankTable = () => {
     const emptyRows = Array(5).fill().map((_, index) => ({
@@ -299,6 +383,9 @@ const UploadExcelSheet = () => {
     setNextId(nextId + 5);
     
     console.log("Created blank table with DataGrid");
+    
+    // Reset attachments when creating a new table
+    setAttachments({});
   };
 
   // Add a new row to the table
@@ -331,6 +418,13 @@ const UploadExcelSheet = () => {
   // Delete a row from the table
   const handleDeleteRow = (id) => {
     setRows(rows.filter(row => row.id !== id));
+    
+    // Clean up any attachments for this row
+    if (attachments[id]) {
+      const updatedAttachments = { ...attachments };
+      delete updatedAttachments[id];
+      setAttachments(updatedAttachments);
+    }
   };
 
   // Handle cell edit
