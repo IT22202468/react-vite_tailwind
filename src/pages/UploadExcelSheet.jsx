@@ -58,7 +58,6 @@ const UploadExcelSheet = () => {
       }
     },
     { field: 'comments', headerName: 'Comments', editable: true, width: 180 },
-    { field: 'grantedValue2', headerName: 'Granted Value', editable: true, width: 150 },
     { field: 'value', headerName: 'Value', editable: true, width: 120 },
     { 
       field: 'attachments', 
@@ -304,7 +303,6 @@ const UploadExcelSheet = () => {
           row.reasonCategory = row.reasonCategory || '';
           row.reasons = row.reasons || '';
           row.comments = row.comments || '';
-          row.grantedValue2 = row.grantedValue2 || '';
           row.value = row.value || '';
           row.attachments = row.attachments || '';
           row.updatedBy = row.updatedBy || '';
@@ -371,7 +369,6 @@ const UploadExcelSheet = () => {
       reasonCategory: '',
       reasons: '',
       comments: '',
-      grantedValue2: '',
       value: '',
       attachments: '',
       updatedBy: '',
@@ -404,7 +401,6 @@ const UploadExcelSheet = () => {
         reasonCategory: '',
         reasons: '',
         comments: '',
-        grantedValue2: '',
         value: '',
         attachments: '',
         updatedBy: '',
