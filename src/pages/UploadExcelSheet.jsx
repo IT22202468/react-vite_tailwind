@@ -122,6 +122,16 @@ const UploadExcelSheet = () => {
     return diffDays.toString();
   };
 
+  // Helper function to calculate difference between granted value and LR amount
+  const calculateDifference = (grantedValue, lrAmount) => {
+    // Convert to numbers and handle empty or non-numeric values
+    const grantedNum = parseFloat(grantedValue) || 0;
+    const lrNum = parseFloat(lrAmount) || 0;
+    
+    // Calculate difference
+    return (grantedNum - lrNum).toFixed(2);
+  };
+
   // Handle file upload
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -189,6 +199,11 @@ const UploadExcelSheet = () => {
           // Calculate aging based on granted date
           if (row.grantedDate) {
             row.aging = calculateAging(row.grantedDate);
+          }
+
+          // Calculate difference if both values exist
+          if (row.grantedValue !== undefined && row.lrAmount !== undefined) {
+            row.difference = calculateDifference(row.grantedValue, row.lrAmount);
           }
           
           // Set empty values for fields not present in Excel
@@ -280,11 +295,22 @@ const UploadExcelSheet = () => {
   const handleCellEdit = (params) => {
     const updatedRows = rows.map(row => {
       if (row.id === params.id) {
-        // If granted date is updated, recalculate aging
+        // Create updated row with the edited cell value
         const updatedRow = { ...row, [params.field]: params.value };
+        
+        // If granted date is updated, recalculate aging
         if (params.field === 'grantedDate') {
           updatedRow.aging = calculateAging(params.value);
         }
+        
+        // If granted value or LR amount is updated, recalculate difference
+        if (params.field === 'grantedValue' || params.field === 'lrAmount') {
+          updatedRow.difference = calculateDifference(
+            params.field === 'grantedValue' ? params.value : row.grantedValue,
+            params.field === 'lrAmount' ? params.value : row.lrAmount
+          );
+        }
+        
         return updatedRow;
       }
       return row;
