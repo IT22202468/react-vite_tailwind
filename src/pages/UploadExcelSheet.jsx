@@ -470,7 +470,7 @@ const UploadExcelSheet = () => {
     <>
       <Navbar />
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Upload Excel Sheet</h1>
+        <h2 className="text-2xl mb-4">Upload Excel Sheet</h2>
         
         <div className="mb-6">
           <input

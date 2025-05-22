@@ -6,9 +6,8 @@ const GraphicalData = () => {
     <>
       <Navbar />
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Graphical Data</h1>
-        {/* Add your graph/chart components here */}
-        <p>This is the Graphical Data page.</p>
+        <h2 className="text-2xl mb-4">Graphical Data</h2>
+        
       </div>
     </>
   );
