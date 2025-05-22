@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import Navbar from "../components/Navbar";
-import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Button, Select, MenuItem, FormControl, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -30,33 +30,30 @@ const UploadExcelSheet = () => {
       field: 'grantedDate', 
       headerName: 'Granted Date', 
       editable: true, 
-      width: 130, 
-      flex: 0.8,
+      minWidth: 130, 
+      // Remove flex property to allow proper resizing
     },
     { 
       field: 'buyerName', 
       headerName: 'Buyer name', 
       editable: true, 
-      width: 180, 
-      flex: 1.2,
+      minWidth: 180, 
     },
     { 
       field: 'invoiceNumber', 
       headerName: 'Invoice Number', 
       editable: true, 
-      width: 170, 
-      flex: 1,
+      minWidth: 170, 
     },
-    { field: 'grantedValue', headerName: 'Granted Value', editable: true, width: 130, flex: 1 },
-    { field: 'lrAmount', headerName: 'LR Amount', editable: true, width: 130, flex: 1 },
-    { field: 'difference', headerName: 'Difference', editable: true, width: 130, flex: 1 },
-    { field: 'aging', headerName: 'Aging', editable: true, width: 100, flex: 0.7 },
-    { field: 'reasonCategory', headerName: 'Reason Category', editable: true, width: 150, flex: 1 },
+    { field: 'grantedValue', headerName: 'Granted Value', editable: true, minWidth: 130 },
+    { field: 'lrAmount', headerName: 'LR Amount', editable: true, minWidth: 130 },
+    { field: 'difference', headerName: 'Difference', editable: true, minWidth: 130 },
+    { field: 'aging', headerName: 'Aging', editable: true, minWidth: 100 },
+    { field: 'reasonCategory', headerName: 'Reason Category', editable: true, minWidth: 150 },
     { 
       field: 'reasons', 
       headerName: 'Reasons', 
-      width: 200, 
-      flex: 1.2,
+      minWidth: 200, 
       editable: false, // We'll handle custom editing with the dropdown
       renderCell: (params) => {
         return (
@@ -76,13 +73,12 @@ const UploadExcelSheet = () => {
         );
       }
     },
-    { field: 'comments', headerName: 'Comments', editable: true, width: 200, flex: 1 },
-    { field: 'value', headerName: 'Value', editable: true, width: 120, flex: 0.8 },
+    { field: 'comments', headerName: 'Comments', editable: true, minWidth: 200 },
+    { field: 'value', headerName: 'Value', editable: true, minWidth: 120 },
     { 
       field: 'attachments', 
       headerName: 'Attachments', 
-      width: 150,
-      flex: 1,
+      minWidth: 150,
       editable: false,
       renderCell: (params) => {
         const rowId = params.row.id;
@@ -129,14 +125,13 @@ const UploadExcelSheet = () => {
         );
       }
     },
-    { field: 'updatedBy', headerName: 'Updated by', editable: true, width: 150, flex: 1 },
-    { field: 'updatedOn', headerName: 'Updated on', editable: true, width: 150, flex: 1 },
-    { field: 'updatedTime', headerName: 'Updated time', editable: true, width: 150, flex: 1 },
+    { field: 'updatedBy', headerName: 'Updated by', editable: true, minWidth: 150 },
+    { field: 'updatedOn', headerName: 'Updated on', editable: true, minWidth: 150 },
+    { field: 'updatedTime', headerName: 'Updated time', editable: true, minWidth: 150 },
     { 
       field: 'actions', 
       headerName: 'Actions', 
-      width: 110,
-      flex: 0.7,
+      minWidth: 110,
       editable: false,
       renderCell: (params) => (
         <Button
@@ -524,6 +519,12 @@ const UploadExcelSheet = () => {
                   showQuickFilter: true,
                 },
               }}
+              columnVisibilityModel={{
+                // Hide any columns if needed initially
+                // Example: id: false,
+              }}
+              // This enables column resizing
+              columnResizeMode="onChange"
               sx={{
                 '& .MuiDataGrid-columnHeader': {
                   backgroundColor: '#f5f5f5',
@@ -531,12 +532,9 @@ const UploadExcelSheet = () => {
                 '& .MuiDataGrid-cell': {
                   padding: '8px',
                 },
-                // This enables column resizing
+                // Enable column resize handle visibility
                 '& .MuiDataGrid-columnSeparator': {
                   visibility: 'visible',
-                  '&:hover': {
-                    backgroundColor: '#1976d2',
-                  },
                 },
               }}
             />
