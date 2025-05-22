@@ -560,3 +560,25 @@ const UploadExcelSheet = () => {
 };
 
 export default UploadExcelSheet;
+
+
+CREATE TABLE tblNotUploaded (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    grantedDate DATE,
+    buyerName VARCHAR(255),
+    invoiceNumber VARCHAR(100),
+    grantedValue DECIMAL(18,2),
+    lrAmount DECIMAL(18,2),
+    difference DECIMAL(18,2),
+    aging INT,
+    reasonCategory VARCHAR(100),
+    reasons VARCHAR(100),
+    comments TEXT,
+    value DECIMAL(18,2),
+    attachmentCount INT,
+    attachmentNames TEXT,
+    updatedBy VARCHAR(100),
+    updatedOn DATE,
+    updatedTime TIME,
+    createdAt DATETIME DEFAULT GETDATE()
+);
