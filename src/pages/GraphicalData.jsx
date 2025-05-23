@@ -76,20 +76,20 @@ const GraphicalData = () => {
       <Box className="p-8">
         <h2 className="text-2xl mb-6 font-bold text-gray-800">Graphical Data</h2>
         
-        {/* Three column layout for charts */}
+        {/* Three column layout for charts with 20% 20% 60% distribution */}
         <Grid container spacing={3} sx={{ mb: 4, minHeight: '400px' }}>
-          {/* Buyer Tabs (Left Column) */}
-          <Grid item xs={12} md={4}>
+          {/* Buyer Tabs (Left Column - 20%) */}
+          <Grid item xs={12} md={2.4}>
             <BuyerListSection />
           </Grid>
           
-          {/* Upload Status Chart (Middle Column) */}
-          <Grid item xs={12} md={4}>
+          {/* Upload Status Chart (Middle Column - 20%) */}
+          <Grid item xs={12} md={2.4}>
             <UploadStatusSection />
           </Grid>
           
-          {/* Reason Analysis Chart (Right Column) */}
-          <Grid item xs={12} md={4}>
+          {/* Reason Analysis Chart (Right Column - 60%) */}
+          <Grid item xs={12} md={7.2}>
             <ReasonAnalysisSection />
           </Grid>
         </Grid>
