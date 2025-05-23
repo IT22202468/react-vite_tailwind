@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
   Legend,
-  Title
+  Title,
+  DoughnutController
 } from 'chart.js';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+ChartJS.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
 const UploadStatusChart = () => {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [completionPercentage, setCompletionPercentage] = useState(0);
 
   useEffect(() => {
     // In a real implementation, this would be an API call
@@ -29,6 +31,11 @@ const UploadStatusChart = () => {
           uploaded: 782500,
           notUploaded: 421300
         };
+        
+        // Calculate completion percentage
+        const total = mockData.uploaded + mockData.notUploaded;
+        const percentage = Math.round((mockData.uploaded / total) * 100);
+        setCompletionPercentage(percentage);
         
         setChartData({
           labels: ['Uploaded', 'Not Uploaded'],
@@ -54,9 +61,34 @@ const UploadStatusChart = () => {
     fetchData();
   }, []);
 
+  // Plugin to display percentage in the center
+  const centerTextPlugin = {
+    id: 'centerText',
+    afterDraw: (chart) => {
+      const width = chart.width;
+      const height = chart.height;
+      const ctx = chart.ctx;
+      
+      ctx.restore();
+      ctx.font = '18px Arial';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      
+      const text = `${completionPercentage}%`;
+      const textX = width / 2;
+      const textY = height / 2;
+      
+      ctx.fillText(text, textX, textY);
+      ctx.font = '14px Arial';
+      ctx.fillText('Completed', textX, textY + 20);
+      ctx.save();
+    }
+  };
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    cutout: '50%',
     plugins: {
       legend: {
         position: 'bottom',
@@ -104,7 +136,7 @@ const UploadStatusChart = () => {
 
   return (
     <Box sx={{ height: 300, width: '100%', position: 'relative' }}>
-      <Pie data={chartData} options={options} />
+      <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} />
     </Box>
   );
 };
