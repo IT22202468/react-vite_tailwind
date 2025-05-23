@@ -69,62 +69,37 @@ const BuyerTabs = () => {
 
   return (
     <Box sx={{ 
-      display: 'flex',
       width: '100%',
       backgroundColor: '#f9f9f9',
       border: '1px solid #e0e0e0',
-      borderRadius: 1
+      borderRadius: 1,
+      height: '100%'
     }}>
-      {/* Vertical Tab List */}
-      <Box sx={{ 
-        width: '240px', 
-        borderRight: '1px solid #e0e0e0',
-        maxHeight: '400px',
-        overflowY: 'auto'
-      }}>
-        <List component="nav" aria-label="buyer tabs">
-          {buyers.map((buyer, index) => (
-            <ListItemButton
-              key={buyer.id}
-              selected={selectedIndex === index}
-              onClick={(event) => handleListItemClick(event, index)}
-              sx={{
-                borderLeft: selectedIndex === index ? '4px solid #1976d2' : '4px solid transparent',
-                backgroundColor: selectedIndex === index ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
-                '&:hover': {
-                  backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                },
+      {/* Vertical Tab List - Only the tabs without content area */}
+      <List component="nav" aria-label="buyer tabs" sx={{ height: '100%' }}>
+        {buyers.map((buyer, index) => (
+          <ListItemButton
+            key={buyer.id}
+            selected={selectedIndex === index}
+            onClick={(event) => handleListItemClick(event, index)}
+            sx={{
+              borderLeft: selectedIndex === index ? '4px solid #1976d2' : '4px solid transparent',
+              backgroundColor: selectedIndex === index ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+              },
+            }}
+          >
+            <ListItemText 
+              primary={buyer.name} 
+              primaryTypographyProps={{
+                fontWeight: selectedIndex === index ? '600' : '400',
+                fontSize: '0.9rem'
               }}
-            >
-              <ListItemText 
-                primary={buyer.name} 
-                primaryTypographyProps={{
-                  fontWeight: selectedIndex === index ? '600' : '400',
-                  fontSize: '0.9rem'
-                }}
-              />
-            </ListItemButton>
-          ))}
-        </List>
-      </Box>
-      
-      {/* Content area - currently empty, to be filled later */}
-      {/* <Box sx={{ 
-        flexGrow: 1, 
-        p: 3, 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        height: '400px',
-        backgroundColor: 'white'
-      }}>
-        <Typography variant="body1" color="text.secondary">
-          {buyers.length > 0 ? 
-            `Select a buyer to view details: ${buyers[selectedIndex]?.name}` : 
-            'No buyer selected'
-          }
-        </Typography>
-      </Box> */}
+            />
+          </ListItemButton>
+        ))}
+      </List>
     </Box>
   );
 };

@@ -112,7 +112,7 @@ const GraphicalData = () => {
         {/* Excel Data Table (Full Width Below) */}
         <Paper elevation={2} sx={{ p: 2 }}>
           <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
-            Transaction Details
+            Buyer wise pending upload invoices
           </Typography>
           <Box sx={{ mt: 2 }}>
             <ExcelDataTable
