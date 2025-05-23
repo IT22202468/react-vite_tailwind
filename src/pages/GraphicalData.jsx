@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import ReasonAnalysisChart from "../components/ReasonAnalysisChart";
-import BuyerTabs from "../components/BuyerTabs";
-import UploadStatusChart from "../components/UploadStatusChart";
-import ExcelDataTable from "../components/ExcelDataTable";
-import { Box, Paper, Grid, Typography, Divider } from "@mui/material";
+import BuyerListSection from "../components/BuyerListSection";
+import UploadStatusSection from "../components/UploadStatusSection";
+import ReasonAnalysisSection from "../components/ReasonAnalysisSection";
+import DataTableSection from "../components/DataTableSection";
+import { Grid, Divider, Box } from "@mui/material";
 
 const GraphicalData = () => {
   // Mock data for the ExcelDataTable component
@@ -73,61 +73,41 @@ const GraphicalData = () => {
   return (
     <>
       <Navbar />
-      <div className="p-8">        
+      <Box className="p-8">
+        <h2 className="text-2xl mb-6 font-bold text-gray-800">Graphical Data</h2>
+        
         {/* Three column layout for charts */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 4, minHeight: '400px' }}>
           {/* Buyer Tabs (Left Column) */}
           <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
-                Buyer List
-              </Typography>
-              <BuyerTabs />
-            </Paper>
+            <BuyerListSection />
           </Grid>
           
           {/* Upload Status Chart (Middle Column) */}
           <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
-                Upload Status
-              </Typography>
-              <UploadStatusChart />
-            </Paper>
+            <UploadStatusSection />
           </Grid>
           
           {/* Reason Analysis Chart (Right Column) */}
           <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
-                Reason Analysis
-              </Typography>
-              <ReasonAnalysisChart />
-            </Paper>
+            <ReasonAnalysisSection />
           </Grid>
         </Grid>
         
         <Divider sx={{ my: 4 }} />
         
         {/* Excel Data Table (Full Width Below) */}
-        <Paper elevation={2} sx={{ p: 2 }}>
-          <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
-            Buyer wise pending upload invoices
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <ExcelDataTable
-              rows={rows}
-              setRows={setRows}
-              nextId={nextId}
-              setNextId={setNextId}
-              attachments={attachments}
-              setAttachments={setAttachments}
-              calculateAging={calculateAging}
-              calculateDifference={calculateDifference}
-            />
-          </Box>
-        </Paper>
-      </div>
+        <DataTableSection
+          rows={rows}
+          setRows={setRows}
+          nextId={nextId}
+          setNextId={setNextId}
+          attachments={attachments}
+          setAttachments={setAttachments}
+          calculateAging={calculateAging}
+          calculateDifference={calculateDifference}
+        />
+      </Box>
     </>
   );
 };
