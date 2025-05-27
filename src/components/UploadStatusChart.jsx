@@ -70,17 +70,17 @@ const UploadStatusChart = () => {
       const ctx = chart.ctx;
       
       ctx.restore();
-      ctx.font = '18px Arial';
+      ctx.font = '10px Arial';
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
       
       const text = `${completionPercentage}%`;
-      const textX = width / 2;
+      const textX = width;
       const textY = height / 2;
       
       ctx.fillText(text, textX, textY);
       ctx.font = '14px Arial';
-      ctx.fillText('Completed', textX, textY + 20);
+      ctx.fillText('Completed', textX, textY);
       ctx.save();
     }
   };

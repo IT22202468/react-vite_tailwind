@@ -54,7 +54,7 @@ const ReasonAnalysisSection = () => {
               borderWidth: 1,
               categoryPercentage: 1.0,
               barPercentage: 1.0,
-              barThickness: 50,
+              barThickness: 40,
               hoverBackgroundColor: colors.map(color =>
                 color === '#8ED973' ? '#6fbf59' : '#008C3A'
               )

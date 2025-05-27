@@ -74,7 +74,7 @@ const GraphicalData = () => {
     <>
       <Navbar />
       <Box className="p-8">
-        <h2 className="text-2xl mb-6 font-bold text-gray-800">Graphical Data</h2>
+        {/* <h2 className="text-2xl mb-6 font-bold text-gray-800">Graphical Data</h2> */}
         
         {/* Three column layout for charts with 20% 20% 60% distribution */}
         <Grid container spacing={3} sx={{ mb: 4, minHeight: '400px' }}>
