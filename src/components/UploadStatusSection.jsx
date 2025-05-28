@@ -140,7 +140,8 @@ const UploadStatusSection = () => {
           </Box>
         ) : (
           <Box sx={{ height: 300, width: '100%', position: 'relative' }}>
-            <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} />
+            {/* <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} /> */}
+            <Doughnut data={chartData} options={options}/>
           </Box>
         )}
       </Box>

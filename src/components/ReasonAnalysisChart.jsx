@@ -93,12 +93,12 @@ const ReasonAnalysisChart = () => {
         barThickness: 25
       }
     },
-    layout: {
-      padding: {
-        top: 10,
-        bottom: 10
-      }
-    }
+    // layout: {
+    //   padding: {
+    //     top: 10,
+    //     bottom: 10
+    //   }
+    // }
   };
 
   return (

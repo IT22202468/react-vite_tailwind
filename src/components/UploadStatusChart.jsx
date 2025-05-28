@@ -18,34 +18,26 @@ const UploadStatusChart = () => {
   const [completionPercentage, setCompletionPercentage] = useState(0);
 
   useEffect(() => {
-    // In a real implementation, this would be an API call
-    // For now, using mock data
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Simulating API delay
         await new Promise(resolve => setTimeout(resolve, 600));
-        
-        // Mock data for uploaded vs not uploaded amounts
+
         const mockData = {
           uploaded: 782500,
           notUploaded: 421300
         };
-        
-        // Calculate completion percentage
+
         const total = mockData.uploaded + mockData.notUploaded;
         const percentage = Math.round((mockData.uploaded / total) * 100);
         setCompletionPercentage(percentage);
-        
+
         setChartData({
           labels: ['Uploaded', 'Not Uploaded'],
           datasets: [
             {
               data: [mockData.uploaded, mockData.notUploaded],
-              backgroundColor: [
-                '#51154A',
-                '#F7C7AC' 
-              ],
+              backgroundColor: ['#51154A', '#F7C7AC'],
               borderWidth: 1,
               hoverOffset: 10
             }
@@ -57,31 +49,28 @@ const UploadStatusChart = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
-  // Plugin to display percentage in the center
+  // 🎯 Plugin to display percentage and label in center
   const centerTextPlugin = {
     id: 'centerText',
-    afterDraw: (chart) => {
-      const width = chart.width;
-      const height = chart.height;
-      const ctx = chart.ctx;
-      
-      ctx.restore();
-      ctx.font = '10px Arial';
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'center';
-      
-      const text = `${completionPercentage}%`;
-      const textX = width;
-      const textY = height / 2;
-      
-      ctx.fillText(text, textX, textY);
-      ctx.font = '14px Arial';
-      ctx.fillText('Completed', textX, textY);
+    beforeDraw: (chart) => {
+      const { width, height, ctx } = chart;
+
       ctx.save();
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const centerX = width / 2;
+      const centerY = height / 2 - 10;
+
+      ctx.fillText(`${completionPercentage}%`, centerX, centerY);
+      ctx.font = '10px Arial';
+      ctx.fillText('Completed', centerX, centerY + 100);
+      ctx.restore();
     }
   };
 
@@ -136,7 +125,8 @@ const UploadStatusChart = () => {
 
   return (
     <Box sx={{ height: 300, width: '100%', position: 'relative' }}>
-      <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} />
+      <Doughnut data={chartData} options={options} />
+      {/* <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} /> */}
     </Box>
   );
 };
